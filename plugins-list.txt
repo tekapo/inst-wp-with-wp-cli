@@ -1,0 +1,2 @@
+contact-form-7
+show-current-template

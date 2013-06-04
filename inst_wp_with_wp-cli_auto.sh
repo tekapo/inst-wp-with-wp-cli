@@ -9,7 +9,7 @@
 # This script is for developing WordPress themes and/or plugins on your LOCAL machine.
 # So, when you use this script on a remote server, please revise the script as you need.
 # 
-# Version: 0.1
+# Version: 0.1.1
 # 
 # License:
 # Released under the GPL license
@@ -31,23 +31,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-# Set default parameters.
+# Default parameters you may need to change.
 
-SELF_DIR=`dirname $0`
+# WEB_SERVER_PROCESS_NAME='httpd' 
+# MYSQL_PROCESS_NAME='mysqld'
 
-WEB_SERVER_PROCESS_NAME='httpd'
-MYSQL_PROCESS_NAME='mysqld'
-
-CURRENT_DATE=`date '+%Y%m%d'`
-CURRENT_TIME=`date '+%H%M%S'`
-
-CURRENT_DATE_TIME="${CURRENT_DATE}_${CURRENT_TIME}"
-
-DOCUMENT_ROOT='/var/www'
+DOCUMENT_ROOT='/var/www' # Anyone knows how to get the document root by any shell command?
 
 WP_LOCALE='ja'
 
-DBNAME="wp_test_${CURRENT_DATE_TIME}"
 DBUSER='root'
 DBPASSWORD='root'
 
@@ -62,6 +54,16 @@ WP_ADMIN_EMAIL='admin@example.com'
 WP_ADDITIONAL_USER_NAME='test1'
 WP_ADDITIONAL_USER_PASSWORD='test1'
 WP_ADDITIONAL_USER_EMAIL='test1@example.com'
+
+# Set some other default parameters.
+
+SELF_DIR=`dirname $0`
+
+CURRENT_DATE=`date '+%Y%m%d'`
+CURRENT_TIME=`date '+%H%M%S'`
+CURRENT_DATE_TIME="${CURRENT_DATE}_${CURRENT_TIME}"
+
+DBNAME="wp_test_${CURRENT_DATE_TIME}"
 
 WP_INSATALL_DIR="wp_${CURRENT_DATE_TIME}"
 WP_INSTALL_FULL_PATH="${DOCUMENT_ROOT}/${WP_INSATALL_DIR}"
@@ -85,9 +87,9 @@ HEREDOC
 # Check if the wp-cli command is installed or not
 
 if ! type "wp" > /dev/null
-	then
-		echo 'wp-cli is not installed. Please see wp-cli.org for further information about the installing.'
-		exit
+  then
+    echo 'wp-cli is not installed. Please see wp-cli.org for further information about the installing.'
+    exit
 fi
 
 # Check if the web server is running.
@@ -113,8 +115,8 @@ fi
 # echo "Making directory based on the current date and time as follows: ${WP_INSTALL_FULL_PATH}"
 
 #if [N]
-#	then
-#	exit
+#  then
+#  exit
 #fi
 
 # Start installing.
@@ -128,8 +130,8 @@ mkdir ${WP_INSTALL_FULL_PATH}
 echo "Downloading the latest WordPress to: ${WP_INSTALL_FULL_PATH}"
 
 wp core download \
-	--locale=${WP_LOCALE} \
-	--path=${WP_INSTALL_FULL_PATH}
+  --locale=${WP_LOCALE} \
+  --path=${WP_INSTALL_FULL_PATH}
 
 # cd to the WordPress root directory just installed. 
 
@@ -138,9 +140,9 @@ cd ${WP_INSTALL_FULL_PATH}
 # Create wp-config.php.
 
 wp core config \
-	--dbname=${DBNAME} \
-	--dbuser=${DBUSER} \
-	--dbpass=${DBPASSWORD}
+  --dbname=${DBNAME} \
+  --dbuser=${DBUSER} \
+  --dbpass=${DBPASSWORD}
 
 # Create a database.
 # TODO: If it doesn't work, show the error message and exit
@@ -150,50 +152,50 @@ wp db create
 # Install WordPress
 
 if ["${WP_URL}" = '']
-	then
-		WP_URL="${DOMAIN}/${WP_INSATALL_DIR}"
+  then
+    WP_URL="${DOMAIN}/${WP_INSATALL_DIR}"
 fi
 
 if ["${WP_TITLE}" = '']
-	then
-		WP_TITLE="wp_test_${CURRENT_DATE_TIME}"
+  then
+    WP_TITLE="wp_test_${CURRENT_DATE_TIME}"
 fi
 
 wp core install \
-	--url=${WP_URL} \
-	--title=${WP_TITLE} \
-	--admin_name=${WP_ADMIN_NAME} \
-	--admin_password=${WP_ADMIN_PASSWORD} \
-	--admin_email=${WP_ADMIN_EMAIL}
+  --url=${WP_URL} \
+  --title=${WP_TITLE} \
+  --admin_name=${WP_ADMIN_NAME} \
+  --admin_password=${WP_ADMIN_PASSWORD} \
+  --admin_email=${WP_ADMIN_EMAIL}
 
 
 # Install and activate plugins.
 
 if [ -e "${PLUGINS_LIST_FULL_PATH}" ]
-	then
-		for PLUGIN in $(cat ${PLUGINS_LIST_FULL_PATH})
-			do
-				wp plugin install ${PLUGIN} --activate
-			done
+  then
+    for PLUGIN in $(cat ${PLUGINS_LIST_FULL_PATH})
+      do
+        wp plugin install ${PLUGIN} --activate
+      done
 fi
 
 # Install themes 
 # TODO: activate one of them.
 
 if [ -e "${THEMES_LIST_FULL_PATH}" ]
-	then
-		for THEME in $(cat ${THEMES_LIST_FULL_PATH})
-			do
-				wp theme install ${THEME}
-			done
+  then
+    for THEME in $(cat ${THEMES_LIST_FULL_PATH})
+      do
+        wp theme install ${THEME}
+      done
 fi
 
 # TODO: Add other users.
 
 # while read USERS
-#	do
-		wp user create ${WP_ADDITIONAL_USER_NAME} ${WP_ADDITIONAL_USER_EMAIL} ${WP_ADDITIONAL_USER_PASSWORD}
-#	done <${WP_ADDITIONAL_USERS_LSIT}
+#  do
+    wp user create ${WP_ADDITIONAL_USER_NAME} ${WP_ADDITIONAL_USER_EMAIL} ${WP_ADDITIONAL_USER_PASSWORD}
+#  done <${WP_ADDITIONAL_USERS_LSIT}
 
 # TODO: Set the settings like the permalink structure and so on.
 
